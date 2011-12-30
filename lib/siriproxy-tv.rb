@@ -109,8 +109,7 @@ class SiriProxy::Plugin::TV < SiriProxy::Plugin
  end
  
 # TV Programm Abend - TV Programm Evening - all channels
-
-listen_for /(TV|spielt|spielers).*(Crime Time|kleinteilen|Abend)/i do
+def abendprogramm
 doc = tvprogrammabend(doc)
 dob = tvprogrammsatabend(dob)
     if doc == NIL or doc == ""
@@ -184,10 +183,8 @@ dob = tvprogrammsatabend(dob)
     request_completed
 end
 
- 
 # TV Programm jetzt - TV Programm NOW all channels
- 
-listen_for /(TV|spielt|spielers).*(Programm|Fernsehen)/i do
+def programmjetzt
 doc = tvprogramm(doc)
 dob = tvprogrammsat(dob)
     if doc == NIL or doc == ""
@@ -242,7 +239,7 @@ dob = tvprogrammsat(dob)
          end
          i += 1
         end
-          say "", spoken: "Es spielt gerade."
+          say "", spoken: "Das läuft gerade im Fernsehen"
 object = SiriAddViews.new
      object.make_root(last_ref_id)
      answer = SiriAnswer.new("TV Programm - aktuell", [
@@ -262,9 +259,23 @@ object = SiriAddViews.new
     request_completed
 end
 
-# RTL now
+def askformore
+		response = ask "Möchtest du außerdem sehen was sonst noch läuft?" #ask the user for something
+		if(response =~ /Ja/i) #process their response
+			say "Alles klar!"
+			programmjetzt
+		end
+end
+listen_for /(TV|spielt|spielers|Was läuft heute).*(Crime Time|kleinteilen|Abend)/i do
+	abendprogramm
+end
 
-listen_for /(spiel|spieles|spielt|TV|Programm).*(RTL)/i do
+listen_for /(TV|spielt|spielers).*(Programm|Fernsehen)/i do
+	programmjetzt
+end
+
+# RTL now
+listen_for /(spiel|spieles|spielt|TV|Programm|Was läuft auf).*(RTL)/i do
 doc = tvprogramm(dob)
 if doc == NIL or doc == ""
         say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
@@ -282,21 +293,23 @@ if doc == NIL or doc == ""
          end
          i += 1
         end
-        	say "Hier ist dein Ergebnis:", spoken: "Hier ist dein Ergebnis"
+		say "Hier ist dein Ergebnis:", spoken: "Hier ist dein Ergebnis"
 		object = SiriAddViews.new
 		object.make_root(last_ref_id)
 		answer = SiriAnswer.new("Jetzt:", [
 		SiriAnswerLine.new(sat)
 		])
 		object.views << SiriAnswerSnippet.new([answer])
+		
 		send_object object
+		############
+		askformore
+		end
+			 request_completed
         end
-    request_completed
-end
 
 # RTL2 now
-
-listen_for /(spiel|spieles|spielt|TV|Programm).*(RTL2)/i do
+listen_for /(spiel|spieles|spielt|TV|Programm|Was läuft auf).*(RTL2|RTL zwei)/i do
 doc = tvprogramm(dob)
 if doc == NIL or doc == ""
         say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
@@ -315,20 +328,22 @@ if doc == NIL or doc == ""
          i += 1
         end
 		say "Hier ist dein Ergebnis:", spoken: "Hier ist dein Ergebnis"
-			object = SiriAddViews.new
-     object.make_root(last_ref_id)
-     answer = SiriAnswer.new("Jetzt:", [
-     SiriAnswerLine.new(sat)
-     ])
-     object.views << SiriAnswerSnippet.new([answer])
-     send_object object
-        end
-    request_completed
+		object = SiriAddViews.new
+		object.make_root(last_ref_id)
+		answer = SiriAnswer.new("Jetzt:", [
+		SiriAnswerLine.new(sat)
+		])
+		object.views << SiriAnswerSnippet.new([answer])
+		
+		send_object object
+		############
+		askformore
+		end
+			 request_completed
 end
 
 # SAT.1 now
-
-listen_for /(spiel|spieles|spielt|TV|Programm).*(SAT1|SAT ein|satt eins)/i do
+listen_for /(spiel|spieles|spielt|TV|Programm|Was läuft auf).*(SAT1|SAT ein|satt eins)/i do
 doc = tvprogramm(dob)
 if doc == NIL or doc == ""
         say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
@@ -347,20 +362,22 @@ if doc == NIL or doc == ""
          i += 1
         end
 		say "Hier ist dein Ergebnis:", spoken: "Hier ist dein Ergebnis"
-			object = SiriAddViews.new
-     object.make_root(last_ref_id)
-     answer = SiriAnswer.new("Jetzt:", [
-     SiriAnswerLine.new(sat)
-     ])
-     object.views << SiriAnswerSnippet.new([answer])
-     send_object object
-        end
-    request_completed
+		object = SiriAddViews.new
+		object.make_root(last_ref_id)
+		answer = SiriAnswer.new("Jetzt:", [
+		SiriAnswerLine.new(sat)
+		])
+		object.views << SiriAnswerSnippet.new([answer])
+		
+		send_object object
+		############
+		askformore
+		end
+			 request_completed
 end
 
 # VOX now
-
-listen_for /(spiel|spieles|spielt|TV|Programm).*(VOX|rocks)/i do
+listen_for /(spiel|spieles|spielt|TV|Programm|Was läuft auf).*(VOX|rocks)/i do
 doc = tvprogramm(dob)
 if doc == NIL or doc == ""
         say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
@@ -379,21 +396,90 @@ if doc == NIL or doc == ""
          i += 1
         end
 		say "Hier ist dein Ergebnis:", spoken: "Hier ist dein Ergebnis"
-			object = SiriAddViews.new
-     object.make_root(last_ref_id)
-     answer = SiriAnswer.new("Jetzt:", [
-     SiriAnswerLine.new(sat)
-     ])
-     object.views << SiriAnswerSnippet.new([answer])
-     send_object object
-        end
-    request_completed
+		object = SiriAddViews.new
+		object.make_root(last_ref_id)
+		answer = SiriAnswer.new("Jetzt:", [
+		SiriAnswerLine.new(sat)
+		])
+		object.views << SiriAnswerSnippet.new([answer])
+		
+		send_object object
+		############
+		askformore
+		end
+			 request_completed
 end
 
+# ARD now
+listen_for /(spiel|spieles|spielt|TV|Programm|Was läuft auf).*(ARD)/i do
+doc = tvprogramm(dob)
+if doc == NIL or doc == ""
+        say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
+    else
+        doc.encoding = 'utf-8'
+        docs = doc.xpath('//title')
+        i = 1
+        while i < docs.length
+         dos = docs[i].to_s
+          dos = cleanup(dos)
+         doss = dos[0,5]
+         if doss == "ARD: "
+         dos = dosund(dos)
+         sat = dos
+         end
+         i += 1
+        end
+		say "Hier ist dein Ergebnis:", spoken: "Hier ist dein Ergebnis"
+		object = SiriAddViews.new
+		object.make_root(last_ref_id)
+		answer = SiriAnswer.new("Jetzt:", [
+		SiriAnswerLine.new(sat)
+		])
+		object.views << SiriAnswerSnippet.new([answer])
+		
+		send_object object
+		############
+		askformore
+		end
+			 request_completed
+end
+
+# ZDF now
+listen_for /(spiel|spieles|spielt|TV|Programm|Was läuft auf).*(ZDF)/i do
+doc = tvprogramm(dob)
+if doc == NIL or doc == ""
+        say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
+    else
+        doc.encoding = 'utf-8'
+        docs = doc.xpath('//title')
+        i = 1
+        while i < docs.length
+         dos = docs[i].to_s
+          dos = cleanup(dos)
+         doss = dos[0,5]
+         if doss == "ZDF: "
+         dos = dosund(dos)
+         sat = dos
+         end
+         i += 1
+        end
+		say "Hier ist dein Ergebnis:", spoken: "Hier ist dein Ergebnis"
+		object = SiriAddViews.new
+		object.make_root(last_ref_id)
+		answer = SiriAnswer.new("Jetzt:", [
+		SiriAnswerLine.new(sat)
+		])
+		object.views << SiriAnswerSnippet.new([answer])
+		
+		send_object object
+		############
+		askformore
+		end
+			 request_completed
+end
 
 # 3SAT now
-
-listen_for /(spiel|spieles|spielt|TV|Programm).*(3 Sat|drei SAT|dreisatz|3sat)/i do
+listen_for /(spiel|spieles|spielt|TV|Programm|Was läuft auf).*(3 Sat|drei SAT|dreisatz|3sat)/i do
 doc = tvprogrammsat(dob)
 if doc == NIL or doc == ""
         say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
@@ -416,5 +502,4 @@ if doc == NIL or doc == ""
         end
     request_completed
 end
-
 end
