@@ -71,7 +71,7 @@ class SiriProxy::Plugin::TV < SiriProxy::Plugin
  
  def tvprogrammabend(doc) # reading whats playing in the evening (20:15) - Austrian channels
   begin
-    doc = Nokogiri::XML(eat("http://www.texxas.de/tv/oesterreich.xml"))
+    doc = Nokogiri::XML(eat("http://www.texxas.de/tv/hauptsender.xml"))
     return doc
     rescue
       doc = ""
@@ -127,25 +127,25 @@ dob = tvprogrammsatabend(dob)
          dos = docs[i].to_s
           dos = cleanup(dos)
           doss = dos[0,5]
-         if doss == "ORF 1"
+         if doss == "ARD: "
          dos = dosund(dos)
          orf1 = dos
-         elsif doss == "ORF 2"
+         elsif doss == "ZDF: "
          dos = dosund(dos)
          orf2 = dos
-         elsif doss == "ORF 3"
+         elsif doss == "SAT.1"
          dos = dosund(dos)
             orf3 = dos
-         elsif doss == "ATV: "
+         elsif doss == "RTL: "
          dos = dosund(dos)
          atv = dos
-         elsif doss == "ORF S"
+         elsif doss == "PRO7:"
          dos = dosund(dos)
          orfs = dos
-         elsif doss == "Puls "
+         elsif doss == "RTL2:"
          dos = dosund(dos)
          puls4 = dos
-         elsif doss == "Servu"
+         elsif doss == "KABEL"
          dos = dosund(dos)
          servus = dos
          else
@@ -195,7 +195,6 @@ dob = tvprogrammsat(dob)
     elsif dob == NIL or dob == ""
     say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
     else
-		say "Es spielt gerade:", spoken: "Es spielt gerade."
         doc.encoding = 'utf-8'
         dob.encoding = 'utf-8'
         docs = doc.xpath('//title')
@@ -203,13 +202,11 @@ dob = tvprogrammsat(dob)
         i = 1
         while i < docs.length
          dos = docs[i].to_s
-		 say docs[i].to_s, spoken: "Es spielt gerade."
           dos = cleanup(dos)
           doss = dos[0,5]
-         if doss == "ARD"
+         if doss == "ARD: "
          dos = dosund(dos)
          orf1 = dos
-		 
          elsif doss == "ZDF: "
          dos = dosund(dos)
          orf2 = dos
@@ -219,13 +216,13 @@ dob = tvprogrammsat(dob)
          elsif doss == "RTL: "
          dos = dosund(dos)
          atv = dos
-         elsif doss == "RTL2:"
+         elsif doss == "PRO7:"
          dos = dosund(dos)
          orfs = dos
-         elsif doss == "KABEL1"
+         elsif doss == "RTL2:"
          dos = dosund(dos)
          puls4 = dos
-         elsif doss == "VOX: "
+         elsif doss == "KABEL"
          dos = dosund(dos)
          servus = dos
          else
@@ -245,7 +242,7 @@ dob = tvprogrammsat(dob)
          end
          i += 1
         end
-          say "Es spielt gerade:", spoken: "Es spielt gerade."
+          say "", spoken: "Es spielt gerade."
       
 object = SiriAddViews.new
      object.make_root(last_ref_id)
@@ -266,189 +263,6 @@ object = SiriAddViews.new
     request_completed
 end
 
-# ORF 1 now
-
-listen_for /(spielt|TV|Programm).*(OR elf eins|Uherek elf eins|ORF eins|wo er F1|brav 1|horst eins|OF eins)/i do
-doc = tvprogramm(doc)
-    if doc == NIL or doc == ""
-        say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
-    else
-        doc.encoding = 'utf-8'
-        docs = doc.xpath('//title')
-        i = 1
-        while i < docs.length
-         dos = docs[i].to_s
-          dos = cleanup(dos)
-         doss = dos[0,5]
-         if doss == "ORF 1"
-         dos = dosund(dos)
-         orf1 = dos
-         end
-         i += 1
-        end
-            say "Es spielt gerade auf", spoken: "Es spielt gerade auf,"
-            say orf1
-        end
-    request_completed
-end
-
-# ORF 2 now
-
-listen_for /(spielt|TV|Programm).*(OR elf zwei|Uherek elf zwei|ORF zwei|wo er F2|brav 2|horst zwei|oder F2|OF zwei|oder elf zwei|Uhr auf zwei|Uherek zwei|Uherek F2|Rolf zwei|OR F2|auf zwei)/i do
-doc = tvprogramm(doc)
-if doc == NIL or doc == ""
-        say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
-    else
-        doc.encoding = 'utf-8'
-        docs = doc.xpath('//title')
-        i = 1
-        while i < docs.length
-         dos = docs[i].to_s
-          dos = cleanup(dos)
-         doss = dos[0,5]
-        
-         if doss == "ORF 2"
-         dos = dosund(dos)
-         orf2 = dos
-         end
-         i += 1
-        end
-            say "Es spielt gerade auf", spoken: "Es spielt gerade auf,"
-            say orf2
-        end
-    request_completed
-end
-
-# ORF 3 now
-
-listen_for /(spielt|TV|Programm).*(OR elf drei|Uherek elf drei|ORF 3|wo er F3|brav 3|horst drei|hoher F3|oder F3|oder elf drei|OR F3|eures drei)/i do
-    doc = tvprogramm(doc)
-if doc == NIL or doc == ""
-        say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
-    else
-        doc.encoding = 'utf-8'
-        docs = doc.xpath('//title')
-        i = 1
-        while i < docs.length
-         dos = docs[i].to_s
-          dos = cleanup(dos)
-         doss = dos[0,5]
-         if doss == "ORF 3"
-         dos = dosund(dos)
-         orf3 = dos
-         end
-         i += 1
-        end
-            say "Es spielt gerade auf", spoken: "Es spielt gerade auf,"
-            say orf3
-        end
-    request_completed
-end
-
-# ATV + now
-
-listen_for /(spielt|TV|Programm).*(ATV|A TV|ab TV|AUTEV|ARTE Frau|ART TV|ARTE TV)/i do
-doc = tvprogramm(doc)
-if doc == NIL or doc == ""
-        say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
-    else
-     doc.encoding = 'utf-8'
-        docs = doc.xpath('//title')
-        i = 1
-        while i < docs.length
-         dos = docs[i].to_s
-          dos = cleanup(dos)
-         doss = dos[0,5]
-         if doss == "ATV: "
-         dos = dosund(dos)
-         atv = dos
-         end
-         i += 1
-        end
-            say "Es spielt gerade auf", spoken: "Es spielt gerade auf,"
-            say atv
-        end
-    request_completed
-end
-
-# Puls 4 now
-
-listen_for /(spiel|spieles|spielt|TV|Programm).*(Puls 4|Puls vier)/i do
-doc = tvprogramm(doc)
-    if doc == NIL or doc == ""
-        say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
-    else
-doc.encoding = 'utf-8'
-        docs = doc.xpath('//title')
-        i = 1
-        while i < docs.length
-         dos = docs[i].to_s
-          dos = cleanup(dos)
-         doss = dos[0,5]
-         if doss == "Puls "
-         dos = dosund(dos)
-         puls4 = dos
-         end
-         i += 1
-        end
-            say "Es spielt gerade auf", spoken: "Es spielt gerade auf,"
-            say puls4
-        end
-    request_completed
-end
-
-# Servus TV now
-
-listen_for /(spiel|spieles|spielt|TV|Programm).*(Servus|Servus TV)/i do
-doc = tvprogramm(doc)
-    if doc == NIL or doc == ""
-        say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
-    else
-     doc.encoding = 'utf-8'
-        docs = doc.xpath('//title')
-        i = 1
-        while i < docs.length
-         dos = docs[i].to_s
-          dos = cleanup(dos)
-         doss = dos[0,5]
-         if doss == "Servu"
-         dos = dosund(dos)
-         servus = dos
-         end
-         i += 1
-        end
-            say "Es spielt gerade auf", spoken: "Es spielt gerade auf,"
-            say servus
-        end
-    request_completed
-end
-
-# ORF SPORT PLUS now
-
-listen_for /(spiel|spieles|spielt|TV|Programm).*(Sport)/i do
-doc = tvprogramm(doc)
-    if doc == NIL or doc == ""
-        say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
-    else
-     doc.encoding = 'utf-8'
-        docs = doc.xpath('//title')
-        i = 1
-        while i < docs.length
-         dos = docs[i].to_s
-          dos = cleanup(dos)
-         doss = dos[0,5]
-        
-         if doss == "ORF S"
-         dos = dosund(dos)
-         orfs = dos
-         end
-         i += 1
-        end
-          say "Es spielt gerade auf", spoken: "Es spielt gerade auf,"
-            say orfs
-        end
-    request_completed
-end
 
 # 3SAT now
 
@@ -477,4 +291,3 @@ if doc == NIL or doc == ""
 end
 
 end
-
