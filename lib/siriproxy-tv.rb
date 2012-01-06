@@ -411,7 +411,7 @@ if doc == NIL or doc == ""
 end
 
 # VOX now
-listen_for /(spiel|spieles|spielt|TV|Programm|Was läuft auf).*(VOX|rocks)/i do
+listen_for /(spiel|spieles|spielt|TV|Programm|Was läuft auf).*(VOX|rocks|FOX)/i do
 doc = tvprogramm(dob)
 if doc == NIL or doc == ""
         say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
