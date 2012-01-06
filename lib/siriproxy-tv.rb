@@ -355,7 +355,7 @@ if doc == NIL or doc == ""
          dos = docs[i].to_s
           dos = cleanup(dos)
          doss = dos[0,5]
-         if doss == "Pro7: "
+         if doss == "PRO7: "
          dos = dosund(dos)
          sat = dos
          end
