@@ -340,7 +340,41 @@ if doc == NIL or doc == ""
 		askformore
 		end
 			 request_completed
-end
+        end
+
+#ProSieben now
+listen_for /(spiel|spieles|spielt|TV|Programm|Was läuft auf).*(ProSieben|Pro sieben|Pro7)/i do
+doc = tvprogramm(dob)
+if doc == NIL or doc == ""
+        say "Es gab ein Problem beim Einlesen des Fernsehprogramms!"
+    else
+        doc.encoding = 'utf-8'
+        docs = doc.xpath('//title')
+        i = 1
+        while i < docs.length
+         dos = docs[i].to_s
+          dos = cleanup(dos)
+         doss = dos[0,5]
+         if doss == "Pro7: "
+         dos = dosund(dos)
+         sat = dos
+         end
+         i += 1
+        end
+		say "Hier ist dein Ergebnis:", spoken: "Hier ist dein Ergebnis"
+		object = SiriAddViews.new
+		object.make_root(last_ref_id)
+		answer = SiriAnswer.new("Jetzt:", [
+		SiriAnswerLine.new(sat)
+		])
+		object.views << SiriAnswerSnippet.new([answer])
+		
+		send_object object
+		############
+		askformore
+		end
+			 request_completed
+        end
 
 # SAT.1 now
 listen_for /(spiel|spieles|spielt|TV|Programm|Was läuft auf).*(SAT1|SAT ein|satt eins)/i do
